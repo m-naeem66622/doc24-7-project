@@ -2,9 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-console.log(
-  `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.z60e7ey.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
-);
+
 mongoose
   .connect(
     `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@cluster0.z60e7ey.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`,
@@ -21,7 +19,7 @@ mongoose
 
 app.use(express.json());
 
-const { userRouter } = require("./routes/users.routes");
+const { userRouter } = require("./api/routes/users.routes");
 app.use("/users", userRouter);
 
 app.use("/", (req, res) => {
@@ -30,6 +28,6 @@ app.use("/", (req, res) => {
   });
 });
 
-app.listen(3000, (req, res) => {
+app.listen(5000, (req, res) => {
   console.log("server is running");
 });

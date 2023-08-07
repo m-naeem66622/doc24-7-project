@@ -1,13 +1,6 @@
 const mongoose = require("mongoose");
-const { ObjectId } = require("mongoose");
 
-const systemRoles = {
-  role: ["DOCTOR", "CLINICAL STAFF", "ADMIN"],
-  shift: ["MORNING", "EVENING"],
-  department: ["PSYCHOLOGY", "REGULAR", "HEART"],
-};
-
-const userSchema = mongoose.Schema(
+const patientSchema = mongoose.Schema(
   {
     firstName: {
       type: String,
@@ -19,7 +12,7 @@ const userSchema = mongoose.Schema(
       required: true,
       uppercase: true,
     },
-    userProfilePhotoPath: {
+    patientProfilePhotoPath: {
       type: String,
     },
     age: {
@@ -52,29 +45,6 @@ const userSchema = mongoose.Schema(
       required: true,
       enum: ["ACTIVE", "INACTIVE"],
     },
-    session: {
-      type: String,
-      default: null,
-    },
-    systemRoles: [
-      {
-        role: {
-          type: String,
-          required: true,
-          enum: systemRoles.role,
-        },
-        shift: {
-          type: String,
-          required: true,
-          enum: systemRoles.shift,
-        },
-        department: {
-          type: String,
-          required: true,
-          enum: systemRoles.department,
-        },
-      },
-    ],
   },
   {
     timestamps: true,
@@ -82,6 +52,4 @@ const userSchema = mongoose.Schema(
   }
 );
 
-const User = mongoose.model("User", userSchema);
-
-module.exports = { User, systemRoles };
+module.exports = mongoose.model("Patient", patientSchema);

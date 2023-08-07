@@ -1,17 +1,17 @@
-const { User } = require("../schemas/user.schema");
+const Patient = require("../schemas/patient.schema");
 
-const saveUser = async (userId, userData) => {
+const savePatient = async (PatientId, PatientData) => {
   try {
-    const user = new User({
-      _id: userId,
-      ...userData,
+    const patient = new Patient({
+      _id: patientId,
+      ...patientData,
     });
-    const savedUser = await user.save();
+    const savedPatient = await patient.save();
 
-    if (savedUser) {
+    if (savedPatient) {
       return {
         status: "SUCCESS",
-        data: savedUser,
+        data: savedPatient,
       };
     } else {
       return {
@@ -26,25 +26,14 @@ const saveUser = async (userId, userData) => {
   }
 };
 
-const setSessionString = async (id, string = null) => {
-  const updatedUser = await User.findByIdAndUpdate(
-    id,
-    { session: string },
-    { new: true }
-  );
-
-  // console.log(updatedUser);
-  return updatedUser;
-};
-
-const getUserByEmail = async (email) => {
+const getPatientByEmail = async (email) => {
   try {
-    const user = await User.findOne({ email: email }).lean().exec();
+    const patient = await Patient.findOne({ email: email }).lean().exec();
 
-    if (user) {
+    if (patient) {
       return {
         status: "SUCCESS",
-        data: user,
+        data: patient,
       };
     } else {
       return {
@@ -59,14 +48,14 @@ const getUserByEmail = async (email) => {
   }
 };
 
-const getAllUsers = async () => {
+const getAllPatients = async () => {
   try {
-    const users = await User.find().lean().exec();
+    const patients = await Patient.find().lean().exec();
 
-    if (users.length > 0) {
+    if (patients.length > 0) {
       return {
         status: "SUCCESS",
-        data: users,
+        data: patients,
       };
     } else {
       return {
@@ -81,14 +70,14 @@ const getAllUsers = async () => {
   }
 };
 
-const getUserById = async (_id) => {
+const getPatientById = async (_id) => {
   try {
-    const user = await User.findById(_id).lean().exec();
+    const patient = await Patient.findById(_id).lean().exec();
 
-    if (user) {
+    if (patient) {
       return {
         status: "SUCCESS",
-        data: user,
+        data: patient,
       };
     } else {
       return {
@@ -103,9 +92,9 @@ const getUserById = async (_id) => {
   }
 };
 
-const updatedUser = async (conditionObj, updateObj, options) => {
+const updatePatient = async (conditionObj, updateObj, options) => {
   try {
-    const updatedUser = await User.findOneAndUpdate(
+    const updatedPatient = await Patient.findOneAndUpdate(
       conditionObj,
       updateObj,
       options
@@ -113,10 +102,10 @@ const updatedUser = async (conditionObj, updateObj, options) => {
       .lean()
       .exec();
 
-    if (updatedUser) {
+    if (updatedPatient) {
       return {
         status: "SUCCESS",
-        data: updatedUser,
+        data: updatedPatient,
       };
     } else {
       return {
@@ -132,10 +121,9 @@ const updatedUser = async (conditionObj, updateObj, options) => {
 };
 
 module.exports = {
-  saveUser,
-  getUserByEmail,
-  getAllUsers,
-  setSessionString,
-  getUserById,
-  updatedUser,
+  savePatient,
+  getPatientByEmail,
+  getAllPatients,
+  getPatientById,
+  updatePatient,
 };

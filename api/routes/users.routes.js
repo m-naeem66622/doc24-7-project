@@ -6,11 +6,17 @@ const {
   addUser,
   loginUser,
   listUsers,
+  logoutUser,
 } = require("../controllers/users.controllers");
+const {
+  signupUserValidation,
+} = require("../middlewares/userValidation.middleware");
 
-userRouter.post("/", addUser);
+userRouter.post("/", signupUserValidation, addUser);
 
 userRouter.get("/login", loginUser);
+
+userRouter.get("/logout",authentication, logoutUser);
 
 userRouter.get("/list", authentication, authorization, listUsers);
 

@@ -1,24 +1,29 @@
 const JWT = require("jsonwebtoken");
+const { getUserById } = require("../models/users.models");
 const JWT_SECRET = process.env.JWT_SECRET;
 
 const authentication = async (req, res, next) => {
   const bearerToken = req.headers.authorization;
 
-  const token = bearerToken.split(" ")[1];
+  const token = bearerToken?.split(" ")[1];
 
-  let isAuthenticated;
-
+  let decodedToken;
+  let isSessionMatched;
   try {
-    isAuthenticated = JWT.verify(token, JWT_SECRET);
-    const decodedToken = JWT.decode(token);
-    req.userRole = decodedToken.systemRoles[0].role;
+    decodedToken = JWT.verify(token, JWT_SECRET);
+    req.decodedToken = decodedToken;
+
+    const userFound = await getUserById(decodedToken._id);
+
+    isSessionMatched = userFound.session === decodedToken.session;
   } catch (error) {
+    console.log(error);
     return res.status(403).json({
       message: "INVALID USER",
     });
   }
 
-  if (isAuthenticated) {
+  if (decodedToken && isSessionMatched) {
     next();
   } else {
     return res.status(404).json({

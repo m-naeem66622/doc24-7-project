@@ -1,6 +1,12 @@
 const mongoose = require("mongoose");
 const { ObjectId } = require("mongoose");
 
+const systemRoles = {
+  role: ["DOCTOR", "CLINICAL STAFF", "ADMIN"],
+  shift: ["MORNING", "EVENING"],
+  department: ["PSYCHOLOGY", "REGULAR", "HEART"],
+};
+
 const userSchema = mongoose.Schema(
   {
     firstName: {
@@ -43,22 +49,26 @@ const userSchema = mongoose.Schema(
       required: true,
       enum: ["ACTIVE", "INACTIVE"],
     },
+    session: {
+      type: String,
+      default: null,
+    },
     systemRoles: [
       {
         role: {
           type: String,
           required: true,
-          enum: ["DOCTOR", "CLINICAL STAFF", "ADMIN"],
+          enum: systemRoles.role,
         },
         shift: {
           type: String,
           required: true,
-          enum: ["MORNING", "EVENING"],
+          enum: systemRoles.shift,
         },
         department: {
           type: String,
           required: true,
-          enum: ["PSYCHOLOGY", "REGULAR", "HEART"],
+          enum: systemRoles.department,
         },
       },
     ],
@@ -69,4 +79,6 @@ const userSchema = mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
+
+module.exports = { User, systemRoles };

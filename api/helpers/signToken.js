@@ -5,6 +5,7 @@ const signToken = async (user) => {
   const tokenData = {
     _id: user._id,
     systemRoles: user.systemRoles,
+    session: user.session,
   };
 
   const signedToken = await JWT.sign(tokenData, JWT_SECRET);

@@ -1,9 +1,29 @@
 const UserModel = require("../models/users.models");
 const bcrypt = require("bcryptjs");
 const { signToken } = require("../helpers/signToken");
+const { validationResult } = require("express-validator");
+const { generateSession } = require("../helpers/generateSession");
 
 const addUser = async (req, res, next) => {
-  const { password } = req.body;
+  // Check for validation errors
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.mapped() });
+  }
+
+  const { email, password } = req.body;
+
+  const userFound = await UserModel.getUserByEmail(email);
+
+  if (userFound) {
+    return res.status(409).json({
+      message: "EMAIL ALREADY EXIST",
+    });
+  }
+
+  // Generating Random Session String
+  const session = generateSession();
+  req.body.session = session;
 
   // Generating random encrypted password
   const salt = await bcrypt.genSalt(10);
@@ -30,10 +50,14 @@ const loginUser = async (req, res, next) => {
 
   const isMatch = await bcrypt.compare(password, userFound.password);
 
-  console.log(isMatch);
+  // console.log(isMatch);
 
   if (isMatch) {
+    const sessionString = generateSession();
+    userFound.session = sessionString;
+    await UserModel.setSessionString(userFound._id, sessionString);
     const signedToken = await signToken(userFound);
+
     return res.status(200).json({
       message: "SUCCESS",
       token: signedToken,
@@ -41,6 +65,21 @@ const loginUser = async (req, res, next) => {
   } else {
     return res.status(404).json({
       message: "INVALID USER",
+    });
+  }
+};
+
+const logoutUser = async (req, res, next) => {
+  console.log("I am reached in logout User");
+  const logoutResult = await UserModel.setSessionString(req.decodedToken._id);
+  if (!logoutResult.session) {
+    return res.status(200).json({
+      message: "SUCCESS",
+    });
+  } else {
+    return res.status(400).json({
+      message: "FAILED",
+      description: "User not logout",
     });
   }
 };
@@ -65,4 +104,5 @@ module.exports = {
   addUser,
   loginUser,
   listUsers,
+  logoutUser,
 };

@@ -1,8 +1,7 @@
 const authorization = async (req, res, next) => {
-  const role = req.userRole;
-  console.log(role);
+  const roles = req.decodedToken.systemRoles;
 
-  if (role === "ADMIN") {
+  if (roles.some((role) => role.role === "ADMIN")) {
     console.log("authorized");
     next();
   } else {

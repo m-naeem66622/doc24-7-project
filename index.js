@@ -22,6 +22,9 @@ app.use(express.json());
 const { userRouter } = require("./api/routes/users.routes");
 app.use("/users", userRouter);
 
+const { patientRouter } = require("./api/routes/patients.routes");
+app.use("/patients", patientRouter);
+
 app.use("/", (req, res) => {
   return res.status(404).json({
     message: "No such route found",

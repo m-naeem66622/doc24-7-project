@@ -1,8 +1,8 @@
-const UserModel = require("../models/users.models");
+const PatientModel = require("../models/patients.models");
 const bcrypt = require("bcryptjs");
 const { signToken } = require("../helpers/signToken");
 
-const addUser = async (req, res, next) => {
+const addPatient = async (req, res, next) => {
   try {
     const { password } = req.body;
 
@@ -10,13 +10,16 @@ const addUser = async (req, res, next) => {
     const salt = await bcrypt.genSalt(10);
     req.body.password = await bcrypt.hash(password, salt);
 
-    req.body.userProfilePhotoPath = req?.fullFilePath;
+    req.body.patientProfilePhotoPath = req?.fullFilePath;
 
-    const savedUser = await UserModel.saveUser(req.userId, req.body);
+    const savedPatient = await PatientModel.savePatient(
+      req.patientId,
+      req.body
+    );
 
     res.status(201).json({
       message: "SUCCESS",
-      user: savedUser,
+      data: savedPatient,
     });
   } catch (error) {
     return res.status(500).json({
@@ -25,29 +28,29 @@ const addUser = async (req, res, next) => {
   }
 };
 
-const loginUser = async (req, res, next) => {
+const loginPatient = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const userFound = await UserModel.getUserByEmail(email);
+    const patientFound = await PatientModel.getPatientByEmail(email);
 
-    if (!userFound) {
+    if (!patientFound) {
       return res.status(404).json({
-        message: "INVALID USER",
+        message: "INVALID Patient",
       });
     }
 
-    const isMatch = await bcrypt.compare(password, userFound.password);
+    const isMatch = await bcrypt.compare(password, patientFound.password);
 
     if (isMatch) {
-      const signedToken = await signToken(userFound);
+      const signedToken = await signToken(patientFound);
       return res.status(200).json({
         message: "SUCCESS",
         token: signedToken,
       });
     } else {
       return res.status(404).json({
-        message: "INVALID USER",
+        message: "INVALID Patient",
       });
     }
   } catch (error) {
@@ -57,19 +60,19 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-const listUsers = async (req, res, next) => {
+const listPatients = async (req, res, next) => {
   try {
-    const users = await UserModel.getAllUsers();
+    const patients = await PatientModel.getAllPatients();
 
-    if (users.length > 0) {
+    if (patients.length > 0) {
       return res.status(200).json({
         message: "SUCCESS",
-        data: users,
+        data: patients,
       });
     } else {
       return res.status(400).json({
         message: "FAILED",
-        description: "No user found",
+        description: "No Patient found",
       });
     }
   } catch (error) {
@@ -79,21 +82,21 @@ const listUsers = async (req, res, next) => {
   }
 };
 
-const getUserById = async (req, res, next) => {
+const getPatientById = async (req, res, next) => {
   try {
-    const { userId } = req.params;
+    const { patientId } = req.params;
 
-    const user = await UserModel.getUserById(userId);
+    const patient = await PatientModel.getPatientById(patientId);
 
-    if (user) {
+    if (patient) {
       return res.status(200).json({
         message: "SUCCESS",
-        data: user,
+        data: patient,
       });
     } else {
       return res.status(404).json({
         message: "FAILED",
-        description: "No user found",
+        description: "No Patient found",
       });
     }
   } catch (error) {
@@ -103,25 +106,25 @@ const getUserById = async (req, res, next) => {
   }
 };
 
-const updateUser = async (req, res, next) => {
+const updatePatient = async (req, res, next) => {
   try {
-    const { userId } = req.params;
+    const { patientId } = req.params;
 
-    const updatedUser = await UserModel.updateUser(
+    const updatedPatient = await PatientModel.updatePatient(
       conditionObj,
       updateObj,
       options
     );
 
-    if (updatedUser) {
+    if (updatedPatient) {
       return res.status(200).json({
         message: "SUCCESS",
-        data: updatedUser,
+        data: updatedPatient,
       });
     } else {
       return res.status(404).json({
         message: "FAILED",
-        description: "No user found",
+        description: "No Patient found",
       });
     }
   } catch (error) {
@@ -132,9 +135,9 @@ const updateUser = async (req, res, next) => {
 };
 
 module.exports = {
-  addUser,
-  loginUser,
-  listUsers,
-  getUserById,
-  updateUser,
+  addPatient,
+  loginPatient,
+  listPatients,
+  getPatientById,
+  updatePatient,
 };

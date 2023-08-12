@@ -3,7 +3,7 @@ const patientRouter = express.Router();
 const { authentication } = require("../middlewares/authentication.middleware");
 const { authorization } = require("../middlewares/authorization.middleware");
 const { generateId } = require("../middlewares/generateId.middleware.js");
-const uploadPatientProfile = require("../middlewares/uploadPatientProfile.middleware.js");
+const uploadProfile = require("../middlewares/uploadProfile.middleware.js");
 
 const {
   addPatient,
@@ -13,12 +13,7 @@ const {
   updatePatient,
 } = require("../controllers/patients.controllers");
 
-patientRouter.post(
-  "/",
-  generateId,
-  uploadPatientProfile.single("patientProfile"),
-  addPatient
-);
+patientRouter.post("/", generateId, uploadProfile, addPatient);
 
 patientRouter.get("/login", loginPatient);
 

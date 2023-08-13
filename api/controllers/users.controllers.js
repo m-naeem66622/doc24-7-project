@@ -26,7 +26,7 @@ const addUser = async (req, res, next) => {
     const session = generateSession();
     req.body.session = session;
 
-    // Generating random encrypted password
+    // Generating salt and hashing the password
     const salt = await bcrypt.genSalt(10);
     req.body.password = await bcrypt.hash(password, salt);
 
@@ -34,10 +34,15 @@ const addUser = async (req, res, next) => {
 
     const savedUser = await UserModel.saveUser(req.userId, req.body);
 
-    res.status(201).json({
-      message: "SUCCESS",
-      user: savedUser,
-    });
+    savedUser.status === "SUCCESS"
+      ? res.status(201).json({
+          message: "SUCCESS",
+          user: savedUser.data,
+        })
+      : res.status(500).json({
+          message: savedUser.status,
+          error: savedUser.error,
+        });
   } catch (error) {
     return res.status(500).json({
       message: "SORRY: Something went wrong",
@@ -51,13 +56,13 @@ const loginUser = async (req, res, next) => {
 
     const userFound = await UserModel.getUserByEmail(email);
 
-    if (!userFound) {
+    if (userFound.status !== "SUCCESS") {
       return res.status(404).json({
         message: "INVALID USER",
       });
     }
 
-    const isMatch = await bcrypt.compare(password, userFound.password);
+    const isMatch = await bcrypt.compare(password, userFound.data?.password);
 
     if (isMatch) {
       const sessionString = generateSession();
@@ -99,15 +104,20 @@ const listUsers = async (req, res, next) => {
   try {
     const users = await UserModel.getAllUsers();
 
-    if (users.length > 0) {
+    if (users.status === "SUCCESS") {
       return res.status(200).json({
-        message: "SUCCESS",
-        data: users,
+        message: users.status,
+        data: users.data,
+      });
+    } else if (users.status === "FAILED") {
+      return res.status(400).json({
+        message: users.status,
+        description: "No user found",
       });
     } else {
       return res.status(400).json({
-        message: "FAILED",
-        description: "No user found",
+        message: users.status,
+        error: users.error,
       });
     }
   } catch (error) {

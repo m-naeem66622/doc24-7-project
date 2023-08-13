@@ -3,7 +3,7 @@ const userRouter = express.Router();
 const { authentication } = require("../middlewares/authentication.middleware");
 const { authorization } = require("../middlewares/authorization.middleware");
 const { generateId } = require("../middlewares/generateId.middleware.js");
-const uploadUserProfile = require("../middlewares/uploadUserProfile.middleware.js");
+const uploadProfile = require("../middlewares/uploadProfile.middleware.js");
 
 const {
   addUser,
@@ -17,12 +17,7 @@ const {
   signupUserValidation,
 } = require("../middlewares/userValidation.middleware");
 
-userRouter.post(
-  "/",
-  generateId,
-  uploadUserProfile.single("userProfile"),
-  addUser
-);
+userRouter.post("/", generateId, uploadProfile, addUser);
 
 userRouter.get("/login", loginUser);
 

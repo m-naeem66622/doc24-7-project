@@ -11,7 +11,7 @@ const authentication = async (req, res, next) => {
   let isSessionMatched;
   try {
     decodedToken = JWT.verify(token, JWT_SECRET);
-    req.decodedToken = decodedToken;
+    req.userRoles = decodedToken.systemRoles;
 
     const userFound = await getUserById(decodedToken._id);
 

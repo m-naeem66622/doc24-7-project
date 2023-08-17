@@ -25,6 +25,9 @@ app.use("/users", userRouter);
 const { patientRouter } = require("./api/routes/patients.routes");
 app.use("/patients", patientRouter);
 
+const { appointmentRouter } = require("./api/routes/appointment.routes");
+app.use("/appointment", appointmentRouter);
+
 app.use("/", (req, res) => {
   return res.status(404).json({
     message: "No such route found",

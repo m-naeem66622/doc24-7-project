@@ -1,6 +1,6 @@
 const Patient = require("../schemas/patient.schema");
 
-const savePatient = async (PatientId, PatientData) => {
+const savePatient = async (patientId, patientData) => {
   try {
     const patient = new Patient({
       _id: patientId,
@@ -21,7 +21,7 @@ const savePatient = async (PatientId, PatientData) => {
   } catch (error) {
     return {
       status: "INTERNAL_SERVER_ERROR",
-      error: error,
+      error: error.message,
     };
   }
 };
@@ -43,7 +43,7 @@ const getPatientByEmail = async (email) => {
   } catch (error) {
     return {
       status: "INTERNAL_SERVER_ERROR",
-      error: error,
+      error: error.message,
     };
   }
 };
@@ -65,7 +65,7 @@ const getAllPatients = async () => {
   } catch (error) {
     return {
       status: "INTERNAL_SERVER_ERROR",
-      error: error,
+      error: error.message,
     };
   }
 };
@@ -87,7 +87,7 @@ const getPatientById = async (_id) => {
   } catch (error) {
     return {
       status: "INTERNAL_SERVER_ERROR",
-      error: error,
+      error: error.message,
     };
   }
 };

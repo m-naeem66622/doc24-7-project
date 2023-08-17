@@ -1,13 +1,11 @@
 const authorization = async (req, res, next) => {
-  const role = req.userRole;
-  console.log(role);
+  const roles = req.userRoles;
 
-  if (role === "ADMIN") {
-    console.log("authorized");
+  if (roles?.some((systemRole) => systemRole.role === "ADMIN")) {
     next();
   } else {
     return res.status(401).json({
-      message: "UN AUTHORIZED",
+      message: "UN_AUTHORIZED",
     });
   }
 };

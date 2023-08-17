@@ -6,7 +6,7 @@ const addPatient = async (req, res, next) => {
   try {
     const { password } = req.body;
 
-    // Generating random encrypted password
+    // Generating salt and hashing the password
     const salt = await bcrypt.genSalt(10);
     req.body.password = await bcrypt.hash(password, salt);
 
@@ -17,10 +17,15 @@ const addPatient = async (req, res, next) => {
       req.body
     );
 
-    res.status(201).json({
-      message: "SUCCESS",
-      data: savedPatient,
-    });
+    savedPatient.status === "SUCCESS"
+      ? res.status(201).json({
+          message: "SUCCESS",
+          user: savedPatient.data,
+        })
+      : res.status(500).json({
+          message: savedPatient.status,
+          error: savedPatient.error,
+        });
   } catch (error) {
     return res.status(500).json({
       message: "SORRY: Something went wrong",
@@ -34,26 +39,28 @@ const loginPatient = async (req, res, next) => {
 
     const patientFound = await PatientModel.getPatientByEmail(email);
 
-    if (!patientFound) {
+    console.log(patientFound);
+    if (patientFound.status !== "SUCCESS") {
       return res.status(404).json({
-        message: "INVALID Patient",
+        message: "INVALID PATIENT",
       });
     }
 
-    const isMatch = await bcrypt.compare(password, patientFound.password);
+    const isMatch = await bcrypt.compare(password, patientFound.data?.password);
 
     if (isMatch) {
-      const signedToken = await signToken(patientFound);
+      const signedToken = await signToken(patientFound.data);
       return res.status(200).json({
         message: "SUCCESS",
         token: signedToken,
       });
     } else {
       return res.status(404).json({
-        message: "INVALID Patient",
+        message: "INVALID PATIENT",
       });
     }
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       message: "SORRY: Something went wrong",
     });
@@ -64,15 +71,20 @@ const listPatients = async (req, res, next) => {
   try {
     const patients = await PatientModel.getAllPatients();
 
-    if (patients.length > 0) {
+    if (patients.status === "SUCCESS") {
       return res.status(200).json({
-        message: "SUCCESS",
-        data: patients,
+        message: patients.status,
+        data: patients.data,
+      });
+    } else if (patients.status === "FAILED") {
+      return res.status(400).json({
+        message: patients.status,
+        description: "No Patient found",
       });
     } else {
       return res.status(400).json({
-        message: "FAILED",
-        description: "No Patient found",
+        message: patients.status,
+        error: patients.error,
       });
     }
   } catch (error) {
@@ -88,15 +100,20 @@ const getPatientById = async (req, res, next) => {
 
     const patient = await PatientModel.getPatientById(patientId);
 
-    if (patient) {
+    if (patient.status === "SUCCESS") {
       return res.status(200).json({
-        message: "SUCCESS",
-        data: patient,
+        message: patient.status,
+        data: patient.data,
+      });
+    } else if (patient.status === "FAILED") {
+      return res.status(400).json({
+        message: patient.status,
+        description: "No Patient found",
       });
     } else {
-      return res.status(404).json({
-        message: "FAILED",
-        description: "No Patient found",
+      return res.status(400).json({
+        message: patient.status,
+        error: patient.error,
       });
     }
   } catch (error) {

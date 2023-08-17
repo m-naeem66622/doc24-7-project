@@ -21,7 +21,7 @@ const saveUser = async (userId, userData) => {
   } catch (error) {
     return {
       status: "INTERNAL_SERVER_ERROR",
-      error: error,
+      error: error.message,
     };
   }
 };
@@ -43,7 +43,7 @@ const getUserByEmail = async (email) => {
   } catch (error) {
     return {
       status: "INTERNAL_SERVER_ERROR",
-      error: error,
+      error: error.message,
     };
   }
 };
@@ -65,7 +65,7 @@ const getAllUsers = async () => {
   } catch (error) {
     return {
       status: "INTERNAL_SERVER_ERROR",
-      error: error,
+      error: error.message,
     };
   }
 };
@@ -87,12 +87,12 @@ const getUserById = async (_id) => {
   } catch (error) {
     return {
       status: "INTERNAL_SERVER_ERROR",
-      error: error,
+      error: error.message,
     };
   }
 };
 
-const updatedUser = async (conditionObj, updateObj, options) => {
+const updateUser = async (conditionObj, updateObj, options) => {
   try {
     const updatedUser = await User.findOneAndUpdate(
       conditionObj,
@@ -125,5 +125,5 @@ module.exports = {
   getUserByEmail,
   getAllUsers,
   getUserById,
-  updatedUser,
+  updateUser,
 };

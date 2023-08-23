@@ -1,4 +1,5 @@
 const User = require("../schemas/user.schema");
+const Appointment = require("../schemas/appointment.schema");
 
 const saveUser = async (userId, userData) => {
   try {
@@ -70,6 +71,31 @@ const getAllUsers = async () => {
   }
 };
 
+const getMyAppointments = async (_docId) => {
+  try {
+    console.log(_docId);
+    const myAppointments = await Appointment.find({ _docId: _docId })
+      .lean()
+      .exec();
+
+    if (myAppointments.length > 0) {
+      return {
+        status: "SUCCESS",
+        data: myAppointments,
+      };
+    } else {
+      return {
+        status: "FAILED",
+      };
+    }
+  } catch (error) {
+    return {
+      status: "INTERNAL_SERVER_ERROR",
+      error: error.message,
+    };
+  }
+};
+
 const getUserById = async (_id) => {
   try {
     const user = await User.findById(_id).lean().exec();
@@ -126,4 +152,5 @@ module.exports = {
   getAllUsers,
   getUserById,
   updateUser,
+  getMyAppointments,
 };

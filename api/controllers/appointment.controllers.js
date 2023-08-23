@@ -15,6 +15,18 @@ const addAppointment = async (req, res, next) => {
       .plus({ minutes: 20 })
       .toJSDate();
 
+    const { isSlotAvailable } = await AppointmentModel.checkForSlot(
+      startTime,
+      endTime,
+      req.body?._docId
+    );
+
+    if (!isSlotAvailable) {
+      return res.status(404).json({
+        message: "SORRY: no slot available in this time",
+      });
+    }
+
     req.body.startTime = startTime;
     req.body.endTime = endTime;
 

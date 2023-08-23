@@ -1,4 +1,5 @@
 const UserModel = require("../models/users.models");
+const AppointmentModel = require("../models/appointment.models");
 const bcrypt = require("bcryptjs");
 const { signToken } = require("../helpers/signToken");
 
@@ -141,10 +142,83 @@ const updateUser = async (req, res, next) => {
   }
 };
 
+const updateAppointment = async (req, res, next) => {
+  try {
+    const { appointmentId, docId } = req.params;
+    const { status } = req.body;
+
+    const conditionObj = {
+      _id: appointmentId,
+      _docId: docId,
+    };
+
+    const updateObj = {
+      $set: { status: status },
+    };
+
+    const options = {
+      new: true,
+    };
+
+    const updatedAppointment = await AppointmentModel.updateAppointment(
+      conditionObj,
+      updateObj,
+      options
+    );
+
+    if (updatedAppointment) {
+      return res.status(200).json({
+        message: "SUCCESS",
+        data: updatedAppointment?.data,
+      });
+    } else {
+      return res.status(500).json({
+        message: "FAILED",
+        description: "Update Failed",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: "SORRY: Something went wrong",
+    });
+  }
+};
+
+const listMyAppointments = async (req, res, next) => {
+  try {
+    const { docId } = req.params;
+    const myAppointments = await UserModel.getMyAppointments(docId);
+
+    if (myAppointments.status === "SUCCESS") {
+      return res.status(200).json({
+        message: myAppointments.status,
+        totalAppointments: myAppointments?.data?.length,
+        data: myAppointments.data,
+      });
+    } else if (myAppointments.status === "FAILED") {
+      return res.status(400).json({
+        message: myAppointments.status,
+        description: "No user found",
+      });
+    } else {
+      return res.status(400).json({
+        message: myAppointments.status,
+        error: myAppointments.error,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: "SORRY: Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   addUser,
   loginUser,
   listUsers,
   getUserById,
   updateUser,
+  listMyAppointments,
+  updateAppointment,
 };

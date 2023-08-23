@@ -11,6 +11,8 @@ const {
   listUsers,
   getUserById,
   updateUser,
+  listMyAppointments,
+  updateAppointment,
 } = require("../controllers/users.controllers");
 
 userRouter.post("/", generateId, uploadProfile, addUser);
@@ -26,7 +28,11 @@ userRouter.get(
   getUserById
 );
 
-userRouter.patch("/update/:userId", authentication, authorization, updateUser);
+userRouter.get("/listMyAppointments/:docId", listMyAppointments);
+
+userRouter.patch("/update/:userId", updateUser);
+
+userRouter.patch("/updateAppointment/:appointmentId/:docId", updateAppointment);
 
 module.exports = {
   userRouter,

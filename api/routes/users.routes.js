@@ -4,6 +4,9 @@ const { authentication } = require("../middlewares/authentication.middleware");
 const { authorization } = require("../middlewares/authorization.middleware");
 const { generateId } = require("../middlewares/generateId.middleware.js");
 const uploadProfile = require("../middlewares/uploadProfile.middleware.js");
+const { validateInput } = require("../middlewares/validateInput.middleware.js");
+
+const { addUserSchema } = require("../validators/user.validator");
 
 const {
   addUser,
@@ -15,7 +18,13 @@ const {
   updateAppointment,
 } = require("../controllers/users.controllers");
 
-userRouter.post("/", generateId, uploadProfile, addUser);
+userRouter.post(
+  "/",
+  generateId,
+  uploadProfile,
+  validateInput(addUserSchema, "BODY"),
+  addUser
+);
 
 userRouter.get("/login", loginUser);
 

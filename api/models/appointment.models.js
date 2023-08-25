@@ -29,7 +29,9 @@ const checkForSlot = async (startTime, endTime, _docId) => {
       _docId: _docId,
       $and: [{ endTime: { $gt: startTime } }, { startTime: { $lt: endTime } }],
     };
-    const overlappedAppointment = await Appointment.findOne(condition);
+    const overlappedAppointment = await Appointment.findOne(condition)
+      .lean()
+      .exec();
 
     if (overlappedAppointment == null) {
       return {

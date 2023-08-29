@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const socket = require("./socket");
 
 mongoose
   .connect(
@@ -34,6 +35,8 @@ app.use("/", (req, res) => {
   });
 });
 
-app.listen(5000, (req, res) => {
+const server = app.listen(5000, (req, res) => {
   console.log("server is running");
 });
+
+socket.connect(server);

@@ -1,12 +1,12 @@
 const Patient = require("../schemas/patient.schema");
 
-const savePatient = async (patientId, patientData) => {
+const savePatient = async (patientId, patientData, opts) => {
   try {
     const patient = new Patient({
       _id: patientId,
       ...patientData,
     });
-    const savedPatient = await patient.save();
+    const savedPatient = await patient.save(opts);
 
     if (savedPatient) {
       return {

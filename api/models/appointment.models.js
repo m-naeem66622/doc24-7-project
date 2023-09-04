@@ -1,9 +1,9 @@
 const Appointment = require("../schemas/appointment.schema");
 
-const saveAppointment = async (data) => {
+const saveAppointment = async (data, opts) => {
   try {
     const appointment = new Appointment(data);
-    const savedAppointment = await appointment.save();
+    const savedAppointment = await appointment.save(opts);
 
     if (savedAppointment) {
       return {

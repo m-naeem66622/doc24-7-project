@@ -9,6 +9,8 @@ const { addAppointment } = require("../controllers/appointment.controllers");
 
 appointmentRouter.post("/", addAppointment);
 
+appointmentRouter.post("/instant", addAppointment);
+
 module.exports = {
   appointmentRouter,
 };

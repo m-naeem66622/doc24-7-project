@@ -1,13 +1,13 @@
 const User = require("../schemas/user.schema");
 const Appointment = require("../schemas/appointment.schema");
 
-const saveUser = async (userId, userData) => {
+const saveUser = async (userId, userData, opts) => {
   try {
     const user = new User({
       _id: userId,
       ...userData,
     });
-    const savedUser = await user.save();
+    const savedUser = await user.save(opts);
 
     if (savedUser) {
       return {
